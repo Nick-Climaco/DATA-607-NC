@@ -10,7 +10,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
- 
+## Summary : 
 The article "Club Soccer Prediction" is a forecasting model of club soccer around the world. 
 This article uses a revised version of ESPN's SPI (Soccer Power Index) rating from seasons 2016 to 2022. 
 The article shows the probability of a team winning, losing, or drawing their respective games.
@@ -35,6 +35,8 @@ df <- data %>%
     filter(probtie > prob1 & probtie > prob2)
 head(df)
 ```
+
+## Conclusion and Findings :
 A very interesting fact based on the data provided, we observe how low the chances are where a tie game is the most probable outcome. 
 For further analysis, we could analyze how SPI for each team can impact their likelihood of a match regardless if they are the home or away team. 
 It also be interesting to cross-examine the teams with the best SPI across different leagues and even different regions of the world.
