@@ -2,7 +2,7 @@
 title: "Data 607 Assignment 2"
 author: "Nick Climaco"
 date: "2023-02-01"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
