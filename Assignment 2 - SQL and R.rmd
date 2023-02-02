@@ -129,9 +129,7 @@ df_3 %>% ggplot(aes(x = Score, y = Movies, fill = Movies)) +
 
 
 ## Conclusion
-The results of the survey conducted via Google Forms have indicated that the movie "Everything Everywhere All at Once" was the most favored among the movie choices presented. 
-
-On the other hand, "M3GAN" was the least liked, with lowest number of favorable scale.
+The results of the survey conducted via Google Forms have indicated that the movie "Everything Everywhere All at Once" was the most favored among the movie choices presented. On the other hand, "M3GAN" was the least liked, with lowest number of favorable scale.
 
 ```{r}
 # disconnect from the database
