@@ -1,0 +1,99 @@
+---
+title: "Assignment_5"
+author: "Nick Climaco"
+date: "2023-02-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE,tidy.opts=list(width.cutoff=90),tidy=TRUE)
+```
+
+### Assignment Description 
+
+The chart above describes arrival delays for two airlines across five destinations. Your task is to:
+(1) Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above.
+You’re encouraged to use a “wide” structure similar to how the information appears above, so
+that you can practice tidying and transformations as described below.
+(2) Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy
+and transform your data.
+(3) Perform analysis to compare the arrival delays for the two airlines.
+(4) Your code should be in an R Markdown file, posted to rpubs.com, and should include narrative
+descriptions of your data cleanup work, analysis, and conclusions. Please include in your
+homework submission:
+ The URL to the .Rmd file in your GitHub repository. and
+ The URL for your rpubs.com web page.
+
+### Import packages
+```{r}
+library(tidyverse)
+```
+### Load the Data
+```{r}
+df <- read.csv("https://raw.githubusercontent.com/Nick-Climaco/Rdataset/main/Numbersenese_kaiserfung_data.csv", na.strings = c("","NA"))
+df[2,1] <- "ALASKA"
+df[5,1] <- "AM West"
+df
+```
+### Tidy and Clean 
+
+```{r}
+df_filter <- df %>%
+    filter(rowSums(is.na(.)) < ncol(.)) %>%
+    rename(Airline = "X", Status = "X.1")
+df_filter
+```
+### Convert to long format using pivot_longer()
+```{r}
+df_long <- df_filter %>%
+    pivot_longer(cols = c("Los.Angeles", "Phoenix", "San.Diego", "San.Francisco", "Seattle"), names_to = "City", values_to = "Count")
+
+head(df_long)
+
+#cols specifies the columns that will be pivoted 
+# names_to specifies the name of the column that will hold the name/s of the old column name/s
+#values_to specifies the name of the column that will hold the values of the old column/s
+```
+### Analysis : for arrival delays for Alaska and AM West airlines
+
+```{r}
+df_long %>% 
+    filter(Airline == "ALA") %>% 
+    summarise(
+        n_delays = sum(Count[Status == "delayed"]),
+        total_flights = sum(Count),
+        delay_rate = round(n_delays / total_flights ,2)
+    )
+```
+
+```{r}
+df_summary <- df_long %>% 
+    group_by(Airline, City) %>%
+    summarise(
+        total_delays = sum(Count[Status == "delayed"]),
+        total_flights = sum(Count),
+        pct_delays = round(total_delays / total_flights, 2)
+    )
+df_summary  
+```
+### Visualization
+```{r}
+ggplot(df_summary, aes(x = City, 
+                       y = pct_delays, 
+                       fill = Airline)) +
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  geom_text(aes(label = pct_delays), 
+            position = position_dodge(width = 1),
+            vjust = -0.5) +
+  labs(x = "Airline", 
+       y = "Delay rate", 
+       fill = "Airline") +
+  theme_bw()
+
+```
+
+### Conclusion
+
+From the given data and shown on the graph, it can be observed that AM West Airlines had a higher rate of arrival delays in these five cities relative to Alaska Airlines. The difference in delays rate is at least 3% which is indicative of a performance disparity between the two airlines in this closed experiment. Thus, the data suggests that traveling to these five cities, Alaska Airlines might be the better choice since it has a lower chance of a delayed arrival. 
+
