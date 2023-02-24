@@ -29,6 +29,8 @@ homework submission:
 library(tidyverse)
 ```
 ### Load the Data
+
+The next chunk load the data from github with na.strings arguments that interprets the character vector as NA values. Then, we assign new value for row 2 column 1 in the dataframe df to "ALASKA" and the apply the same to row 5 column 1 to "AM West".
 ```{r}
 df <- read.csv("https://raw.githubusercontent.com/Nick-Climaco/Rdataset/main/Numbersenese_kaiserfung_data.csv", na.strings = c("","NA"))
 df[2,1] <- "ALASKA"
@@ -37,6 +39,9 @@ df
 ```
 ### Tidy and Clean 
 
+Filtering out the rows from df where all values are missing. 
+rowSums(is.na(.)) creates a vector of the missing values in each row. 
+If at least one column on a given row has a missing value then that row is filtered out. 
 ```{r}
 df_filter <- df %>%
     filter(rowSums(is.na(.)) < ncol(.)) %>%
@@ -44,27 +49,23 @@ df_filter <- df %>%
 df_filter
 ```
 ### Convert to long format using pivot_longer()
+
+Using the pivot_longer() function, we can convert the data from wide format to long format. Thus tidying the data. The chunk below takes in the df_filter dataframe then pipes into the pivot_longer() function: where we selected the city columns that will be pivoted. Then, names_to = "City" will be a new column that will hold the old column names. values_to = "Count", where "Count" will be a new column that will hold the values of the old columns.
+   
+    -cols specifies the columns that will be pivoted 
+    -names_to specifies the name of the column that will hold the name/s of
+    the old column name/s
+    -values_to specifies the name of the column that will hold the values
+    of the old column/s
 ```{r}
 df_long <- df_filter %>%
     pivot_longer(cols = c("Los.Angeles", "Phoenix", "San.Diego", "San.Francisco", "Seattle"), names_to = "City", values_to = "Count")
 
 head(df_long)
-
-#cols specifies the columns that will be pivoted 
-# names_to specifies the name of the column that will hold the name/s of the old column name/s
-#values_to specifies the name of the column that will hold the values of the old column/s
 ```
 ### Analysis : for arrival delays for Alaska and AM West airlines
 
-```{r}
-df_long %>% 
-    filter(Airline == "ALA") %>% 
-    summarise(
-        n_delays = sum(Count[Status == "delayed"]),
-        total_flights = sum(Count),
-        delay_rate = round(n_delays / total_flights ,2)
-    )
-```
+Here, creating a new datafram called df_summary where it takes the data  from df_long, then using the group_by() to group by Airline and City then pipes into the summarise() function where it calculate the total number of delays, total number of flights, and the percentage of delays.
 
 ```{r}
 df_summary <- df_long %>% 
@@ -77,6 +78,8 @@ df_summary <- df_long %>%
 df_summary  
 ```
 ### Visualization
+
+
 ```{r}
 ggplot(df_summary, aes(x = City, 
                        y = pct_delays, 
